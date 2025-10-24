@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const gymRoutes = require('./routes/gymRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
+const authenticationRoutes = require('./routes/authRoutes');
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/users', userRoutes);
 app.use('/gyms', gymRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/reservation', reservationRoutes);
+app.use('/register', authenticationRoutes);
 
 const PORT = process.env.PORT || 5000;
 

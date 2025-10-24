@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -5,8 +6,9 @@ const fs = require('fs').promises;
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
-
+const JSON_TOKEN = process.env.JSON_TOKEN;
 const userFilePath = path.join(__dirname, '../data/users.json');
 
 async function readUsers() {
@@ -26,7 +28,7 @@ async function writeUsers(users) {
 
 
 
-router.get( '/register',
+router.post( '/register',
 	body('username').trim().notEmpty().withMessage('Username is required'),
 	body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
 	body('password').isLength({ min: 6}).withMessage('Password must be at least 6 characters'),
@@ -47,7 +49,7 @@ router.get( '/register',
 				return res.status(409).json({ message: 'Email is already registered'});
 			}
 
-			const hashedPassword = bcrypt.hash(password, 10);
+			const hashedPassword = await bcrypt.hash(password, 10);
 
 			const newId = users.length ? Math.max(...users.map(u => u.id)) + 1: 1;
 			const newUser = new User(newId, username, email, hashedPassword, role, new Date().toISOString());
@@ -61,6 +63,39 @@ router.get( '/register',
 			
 		}
 	}
+)
+router.post('/login', async(req, res) => {
+	const { email, password } = req.body;
+
+	try {
+		const users = await readUsers();
+		const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+		if(!user){
+			return res.status(400).json({ message: 'Invalid Email or Password'});
+		};
+		const isMatched = await bcrypt.compare(password, user.password);
+		if(!isMatched) {
+			return res.status(400).json({ message: 'Invalid Email or Password'});
+		}
+		const token = jwt.sign(
+			{id: user.id, email: user.email, role: user.role },
+			JSON_TOKEN,
+			{expiresIn: process.env.JWT_EXPIRES_IN || '1h'}
+		)
+		res.status(200).json({ message: 'Login successful', 
+			token,
+			user:{
+				id: user.id,
+				username: user.username,
+				email: user.email,
+				role: user.role,
+			}
+		})
+	} catch (error) {
+		console.error('Login error:', error);
+		res.status(500).json({ message: "Server Error"});
+	}
+}
 )
 
 module.exports = router;

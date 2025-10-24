@@ -27,7 +27,7 @@ app.use('/users', userRoutes);
 app.use('/gyms', gymRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/reservation', reservationRoutes);
-app.use('/register', authenticationRoutes);
+app.use('/auth', authenticationRoutes);
 
 const PORT = process.env.PORT || 5000;
 

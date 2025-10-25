@@ -1,0 +1,20 @@
+### Register
+POST http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+  "username": "Daniel Ghannadi",
+  "email": "danielghannadi1206@gmail.com",
+  "password": "Daniel1402@Ghannadi1384",
+  "role": "admin"
+}
+
+
+### Login
+POST http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+  "email": "danielghannadi1206@gmail.com",
+  "password": "Daniel1402@Ghannadi1384"
+}

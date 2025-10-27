@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const verifyToken = require('../middleware/authMiddleware');
+const authorizeRoles = require('../middleware/roleMiddleware');
+
+
 
 
 const reservationFilePath = path.join(__dirname, '../data/reservations.json');
@@ -23,7 +27,7 @@ router.get('/', (req, res) => {
 	});
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id',verifyToken, (req, res) => {
 	const reservationId = parseInt(req.params.id);
 	fs.readFile(reservationFilePath, 'utf8', (err, data) => {
 		if(err){

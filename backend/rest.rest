@@ -18,3 +18,7 @@ Content-Type: application/json
   "email": "danielghannadi1206@gmail.com",
   "password": "Daniel1402@Ghannadi1384"
 }
+###
+GET http://localhost:5000/users
+
+

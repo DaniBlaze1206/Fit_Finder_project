@@ -27,42 +27,47 @@ async function writeUsers(users) {
 }
 
 // Register route
+// Register route
 router.post(
-	'/register',
-	body('username').trim().notEmpty().withMessage('Username is required'),
-	body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
-	body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-	body('role').isIn(['user', 'coach', 'club-manager', 'admin']).withMessage('Valid role is required'),
-	async (req, res) => {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
+  '/register',
+  body('username').trim().notEmpty().withMessage('Username is required'),
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-		const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
-		try {
-			const users = await readUsers();
-			const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-			if (existing) {
-				return res.status(409).json({ message: 'Email is already registered' });
-			}
+    try {
+      const users = await readUsers();
+      const existing = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (existing) {
+        return res.status(409).json({ message: 'Email is already registered' });
+      }
 
-			const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-			const newId = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
-			const newUser = new User(newId, username, email, hashedPassword, role, new Date().toISOString());
-			users.push(newUser);
-			await writeUsers(users);
+      const newId = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
 
-			const { password: _, ...safeUser } = newUser;
-			return res.status(201).json({ message: 'New user registered', user: safeUser });
-		} catch (error) {
-			console.error('Register error:', error);
-			return res.status(500).json({ message: 'Server error during registration' });
-		}
-	}
+     
+      const role = 'user';
+
+      const newUser = new User(newId, username, email, hashedPassword, role, new Date().toISOString());
+      users.push(newUser);
+      await writeUsers(users);
+
+      const { password: _, ...safeUser } = newUser;
+      return res.status(201).json({ message: 'New user registered', user: safeUser });
+    } catch (error) {
+      console.error('Register error:', error);
+      return res.status(500).json({ message: 'Server error during registration' });
+    }
+  }
 );
+
 
 // Login route
 router.post('/login', async (req, res) => {

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const verifyToken = require('../middleware/authMiddleware');
 
 const gymFilePath = path.join(__dirname, '../data/gyms.json')
 
@@ -22,7 +23,7 @@ router.get('/', (req, res) => {
 	});
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', verifyToken, (req, res) => {
 	const gymId = parseInt(req.params.id);
 	fs.readFile(gymFilePath, 'utf8', (err, data) => {
 		if(err){

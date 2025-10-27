@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const verifyToken = require('../middleware/authMiddleware');
+const authorizeRoles = require('../middleware/roleMiddleware');
+
+
 
 const reviewFilePath = path.join(__dirname, '../data/reviews.json');
 
@@ -21,7 +25,7 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/:id', (req, res) => {
+router.get('/:id', verifyToken, (req, res) => {
 	const reviewId = parseInt(req.params.id);
 	fs.readFile(reviewFilePath, 'utf8', (err, data) => {
 		if(err) {

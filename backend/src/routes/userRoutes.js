@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const verifyToken = require('../middleware/authMiddleware');
+const authorizeRoles = require('../middleware/roleMiddleware');
+
 
 
 const userFilePath = path.join(__dirname, '../data/users.json');
@@ -30,7 +33,7 @@ router.get('/', (req, res) => {
 });
 
 
-router.get( '/:id', (req, res) => {
+router.get( '/:id', verifyToken, (req, res) => {
 	const userId = parseInt(req.params.id);
 
 	fs.readFile(userFilePath, 'utf8',(err, data) => {

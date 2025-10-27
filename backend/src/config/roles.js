@@ -2,7 +2,7 @@
 const ROLES = {
   USER: 'user',
   COACH: 'coach',
-  CLUB_MANAGER: 'club_manager',
+  CLUB_MANAGER: 'club-manager',
   ADMIN: 'admin'
 };
 

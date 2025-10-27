@@ -1,4 +1,4 @@
-require('dotenv').config;
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const fs = require('fs').promises;
 const path = require('path');
@@ -32,12 +32,12 @@ async function verifyToken(req, res, next) {
 		}
 
 		const { password, ...safeUser } = user;
-		req.body = safeUser;
+		req.user = safeUser;
 
 		next();
 	} catch (err) {
 		console.error('Token verify error: ', err);
-		return res.status(401).jsoi({ message: 'Invalid or expired token'});
+		return res.status(401).json({ message: 'Invalid or expired token'});
 	}
 }
 

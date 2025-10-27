@@ -26,8 +26,7 @@ async function writeUsers(users) {
 	await fs.writeFile(userFilePath, text, 'utf8');
 }
 
-// Register route
-// Register route
+
 router.post(
   '/register',
   body('username').trim().notEmpty().withMessage('Username is required'),
@@ -108,3 +107,6 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+
+
+

@@ -50,3 +50,10 @@ const updateUser = async (req, res) => {
     res.status(500).json({ error: 'Error updating profile' });
   }
 };
+
+
+module.exports = {
+	getProfile,
+	getAllUsers,
+	updateUser
+};

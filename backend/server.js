@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const userRoutes = require('./routes/userRoutes');
-const gymRoutes = require('./routes/gymRoutes');
-const reviewRoutes = require('./routes/reviewRoutes');
-const reservationRoutes = require('./routes/reservationRoutes');
-const authenticationRoutes = require('./routes/authRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const gymRoutes = require('./src/routes/gymRoutes');
+const reviewRoutes = require('./src/routes/reviewRoutes');
+const reservationRoutes = require('./src/routes/reservationRoutes');
+const authenticationRoutes = require('./src/routes/authRoutes');
 
 dotenv.config();
 

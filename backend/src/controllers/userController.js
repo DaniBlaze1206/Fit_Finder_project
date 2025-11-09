@@ -6,10 +6,11 @@ const userFilePath = path.join(__dirname, '../data/users.json');
 const readUser = async () => {
 	const text = await fs.readFile(userFilePath, 'utf8');
 	const users = text? JSON.parse(text): [];
+	return users;
 };
 
-const writeFile = async (users) => {
-	await fs.writeFile(userFilePath, JSON.stringify(users, null, 2));
+const writeUsers = async (users) => {
+	await fs.writeUsers(userFilePath, JSON.stringify(users, null, 2));
 };
 
 

@@ -11,7 +11,7 @@ const userFilePath = path.join(__dirname, '../data/users.json');
 async function verifyToken(req, res, next) {
 	const authHeaders = req.headers.authorization;
 	if(!authHeaders || !authHeaders.startsWith('Bearer ')){
-		return res.status(401).josn({ message: 'Authorization token missing'});
+		return res.status(401).json({ message: 'Authorization token missing'});
 	};
 
 	const token = authHeaders.split(' ')[1];

@@ -1,50 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
+
 const verifyToken = require('../middleware/authMiddleware');
 const authorizeRoles = require('../middleware/roleMiddleware');
 
+const {
+  createReservation,
+  getMyReservations,
+  getAllReservations,
+  getReservationsForGym
+} = require('../controllers/reservationController');
 
 
-
-const reservationFilePath = path.join(__dirname, '../data/reservations.json');
-
+router.post('/', verifyToken, createReservation);
 
 
-router.get('/', (req, res) => {
-	fs.readFile(reservationFilePath, 'utf8', (err, data) => {
-		if(err){
-			return res.status(500).json({ message: 'Error reading reservation file'});
-		};
-		let reservations = [];
-		try {
-			reservations = data? JSON.parse(data): [];
-		} catch (error) {
-			return res.status(500).json({ message: 'Invalid JSON format'});
-		};
-		res.json(reservations);
-	});
-});
+router.get('/me', verifyToken, getMyReservations);
 
-router.get('/:id',verifyToken, (req, res) => {
-	const reservationId = parseInt(req.params.id);
-	fs.readFile(reservationFilePath, 'utf8', (err, data) => {
-		if(err){
-			return res.status(500).json({ message: 'Error reading reservation file'});
-		};
-		let reservations = [];
-		try {
-			reservations = data? JSON.parse(data): [];
-		} catch (error) {
-			return res.status(500).json({ message: 'Invalid JSON format'});
-		};
-		const reservation = reservations.find(u => u.id === reservationId);
-		if(!reservation){
-			return res.status(404).json({ message: 'Reservation not found...'})
-		};
-		res.json(reservation);
-	});
-});
+
+router.get('/', verifyToken, authorizeRoles('admin'), getAllReservations);
+
+router.get(
+  '/gym/:gymId',
+  verifyToken,
+  authorizeRoles('admin', 'club-manager'),
+  getReservationsForGym
+);
 
 module.exports = router;

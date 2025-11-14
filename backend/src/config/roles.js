@@ -1,4 +1,4 @@
-// backend/src/config/roles.js
+
 const ROLES = {
   USER: 'user',
   COACH: 'coach',

@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const userFilePath = path.join(__dirname, '../data/users.json');
+const bcrypt = require('bcrypt');
 
 
 const readUser = async () => {
@@ -43,26 +44,79 @@ const getAllUsers = async (req, res) => {
 	}
 }
 // update user
-
 const updateUser = async (req, res) => {
-	try {
+  try {
     const users = await readUser();
     const userIndex = users.findIndex(u => u.id === req.user.id);
     if (userIndex === -1) return res.status(404).json({ error: 'User not found' });
 
-    const updatedUser = { ...users[userIndex], ...req.body };
-    users[userIndex] = updatedUser;
+    const existingUser = users[userIndex];
 
+
+    const allowedUpdates = {
+      username: req.body.username ?? existingUser.username,
+      email: req.body.email ?? existingUser.email
+    };
+
+
+    if (allowedUpdates.email && !allowedUpdates.email.includes('@')) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    const updatedUser = {
+      ...existingUser,
+      ...allowedUpdates
+    };
+
+    users[userIndex] = updatedUser;
     await writeUsers(users);
-    res.status(200).json(updatedUser);
+
+    const { password, ...safeUser } = updatedUser;
+
+    res.status(200).json(safeUser);
+
   } catch (err) {
     res.status(500).json({ error: 'Error updating profile' });
   }
 };
 
+const updatePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ error: 'Old and new passwords are required' });
+    }
+
+    const users = await readUser();
+    const userIndex = users.findIndex(u => u.id === req.user.id);
+    if (userIndex === -1) return res.status(404).json({ error: 'User not found' });
+
+    const user = users[userIndex];
+
+    // Check correct old password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Old password is incorrect' });
+    }
+
+    // Hash new password
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashed;
+
+    await writeUsers(users);
+
+    res.status(200).json({ message: 'Password updated successfully' });
+
+  } catch (err) {
+    res.status(500).json({ error: 'Error updating password' });
+  }
+};
 
 module.exports = {
 	getProfile,
 	getAllUsers,
-	updateUser
+	updateUser,
+	updatePassword
 };

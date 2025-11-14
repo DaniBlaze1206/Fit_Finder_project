@@ -1,48 +1,26 @@
+// src/routes/gymRoutes.js
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
 const verifyToken = require('../middleware/authMiddleware');
+const authorizeRoles = require('../middleware/roleMiddleware');
+const ROLES = require('../config/roles');
 
-const gymFilePath = path.join(__dirname, '../data/gyms.json')
+const {
+  getAllGyms,
+  getGymById,
+  createGym,
+} = require('../controllers/gymController');
 
-router.get('/', (req, res) => {
-	fs.readFile(gymFilePath, 'utf8', (err, data) => {
-		if(err) {
-			return res.status(500).json({ message: 'Error reading gyms file'});
-		};
-		let gyms = [];
-		try {
-			gyms = JSON.parse(data);
-		} catch (error) {
-			return res.status(500).json({ message: 'Invalid JSON format'});
-		};
-		
+router.get('/', getAllGyms);
 
-		res.json(gyms);
-	});
-});
 
-router.get('/:id', verifyToken, (req, res) => {
-	const gymId = parseInt(req.params.id);
-	fs.readFile(gymFilePath, 'utf8', (err, data) => {
-		if(err){
-			return res.status(500).json({ message: 'Error reading gyms file'});
-		};
-		let gyms = [];
-	
-		try {
-			gyms = data? JSON.parse(data) : [];
-		} catch (error) {
-			res.status(500).json({ message: 'Invalid JSON format'});
-		};
-		const gym = gyms.find(u => u.id === gymId);
-		if(!gym){
-			return res.status(404).json({ message: 'Gym not found...'})
-		};
-		res.json(gym);
-	})
-})
+router.get('/:id', verifyToken, getGymById);
 
+router.post(
+  '/',
+  verifyToken,
+  authorizeRoles(ROLES.ADMIN, ROLES.CLUB_MANAGER),
+  createGym
+);
 
 module.exports = router;

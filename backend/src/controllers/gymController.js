@@ -1,6 +1,6 @@
-
 const fs = require('fs').promises;
 const path = require('path');
+
 
 const gymFilePath = path.join(__dirname, '../data/gyms.json');
 

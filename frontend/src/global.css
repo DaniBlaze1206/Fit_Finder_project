@@ -1,0 +1,27 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* html & body scroll normally */
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  background: #0A0A0A;
+}
+
+/* IMPORTANT: allow #root to grow as tall as content */
+#root {
+  width: 100%;
+  min-height: auto; /* <--- FIX */
+  height: auto;     /* <--- FIX */
+  overflow: visible; /* <--- FIX */
+}
+
+/* Font */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+}

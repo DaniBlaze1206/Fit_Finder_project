@@ -1,6 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+
+/* -------------------- SCROLL REVEAL CODE -------------------- */
+
+function useRevealOnScroll() {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("reveal-visible");
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return ref;
+}
+
+function Reveal({ children, delay = 0 }) {
+  const ref = useRevealOnScroll();
+  return (
+    <div
+      ref={ref}
+      className="reveal"
+      style={{ "--reveal-delay": `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ */
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -10,22 +51,13 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
-  const [success, setSuccess] = useState("");
-
-  const handleRegister = async (e) => {
+  async function handleRegister(e) {
     e.preventDefault();
-    setError("");
-    setSuccess("");
 
-    // client-side check
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      alert("Passwords do not match.");
       return;
     }
-
-    setLoading(true);
 
     try {
       await axios.post("http://localhost:5000/auth/register", {
@@ -34,232 +66,207 @@ export default function RegisterPage() {
         password,
       });
 
-      setSuccess("Account created successfully! Redirecting...");
-      setTimeout(() => navigate("/login"), 1500);
-
+      navigate("/login");
     } catch (err) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message);
-      } else if (err.response?.data?.errors) {
-        setError(err.response.data.errors[0].msg);
-      } else {
-        setError("Registration failed.");
-      }
-    } finally {
-      setLoading(false);
+      alert("Registration failed: ", err);
     }
-  };
+  }
 
   return (
     <div style={styles.page}>
-      <div style={styles.card} className="card-anim">
-
-        <h1 style={styles.logo} className="fade-in">FitFinder</h1>
-        <p style={styles.subtitle} className="fade-in-slow">Create Your Premium Account</p>
-
-        <form onSubmit={handleRegister} style={styles.form} className="fade-in-slower">
-
-          {/* USERNAME */}
-          <div style={styles.field}>
-            <label style={styles.label}>Username</label>
-            <input
-              type="text"
-              value={username}
-              style={styles.input}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="input-anim"
-            />
-          </div>
-
-          {/* EMAIL */}
-          <div style={styles.field}>
-            <label style={styles.label}>Email</label>
-            <input
-              type="email"
-              value={email}
-              style={styles.input}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="input-anim"
-            />
-          </div>
-
-          {/* PASSWORD */}
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
-            <input
-              type="password"
-              value={password}
-              style={styles.input}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="input-anim"
-            />
-          </div>
-
-          {/* CONFIRM PASSWORD */}
-          <div style={styles.field}>
-            <label style={styles.label}>Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              style={styles.input}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="input-anim"
-            />
-          </div>
-
-          {error && <div style={styles.error}>{error}</div>}
-          {success && <div style={styles.success}>{success}</div>}
-
-          <button type="submit" style={styles.button} className="button-anim">
-            {loading ? "Creating..." : "Register"}
-          </button>
-        </form>
-
-        <p style={styles.bottomText} className="fade-in-slowest">
-          Already have an account?
-          <Link to="/login" style={styles.link}> Login</Link>
-        </p>
-      </div>
-
+      {/* ANIMATION + BUTTON HOVER CSS */}
       <style>{`
-
-        /* Card entrance animation */
-        .card-anim {
+        /* Scroll reveal base */
+        .reveal {
           opacity: 0;
-          transform: translateY(20px);
-          animation: popIn 0.9s ease forwards;
+          transform: translateY(24px);
+          transition:
+            opacity 0.6s ease,
+            transform 0.6s ease;
+          transition-delay: var(--reveal-delay, 0ms);
         }
 
-        @keyframes popIn {
-          0% { opacity: 0; transform: translateY(25px) scale(0.95); }
-          100% { opacity: 1; transform: translateY(0) scale(1); }
+        .reveal-visible {
+          opacity: 1;
+          transform: translateY(0);
         }
 
-        /* Fade sequences */
-        .fade-in { animation: fade 1s ease forwards; opacity: 0; }
-        .fade-in-slow { animation: fade 1.3s ease forwards; opacity: 0; }
-        .fade-in-slower { animation: fade 1.6s ease forwards; opacity: 0; }
-        .fade-in-slowest { animation: fade 1.9s ease forwards; opacity: 0; }
-
-        @keyframes fade {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Input focus glow */
-        .input-anim {
-          transition: 0.25s ease;
-        }
-        .input-anim:focus {
-          border: 1px solid #D4AF37;
-          box-shadow: 0 0 10px rgba(212,175,55,0.35);
-          transform: scale(1.02);
-        }
-
-        /* Button hover animation */
+        /* Premium gold hover animation */
         .button-anim {
-          transition: all 0.25s ease;
-        }
-        .button-anim:hover {
-          background-color: #c6a32f;
-          transform: translateY(-2px);
-          box-shadow: 0 0 15px rgba(212,175,55,0.55);
+          position: relative;
+          display: inline-block;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
+        .button-anim:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0 12px rgba(212,175,55,0.45);
+        }
+
+        /* Shine effect */
+        .button-anim::after {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: -80%;
+          width: 50%;
+          height: 100%;
+          background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.5),
+            transparent
+          );
+          transform: skewX(-20deg);
+        }
+
+        .button-anim:hover::after {
+          animation: shine 0.6s ease;
+        }
+
+        @keyframes shine {
+          0% { left: -80%; }
+          100% { left: 130%; }
+        }
       `}</style>
+
+      <Reveal>
+        <div style={styles.card}>
+          <Reveal delay={0}>
+            <h2 style={styles.title}>Create Account</h2>
+          </Reveal>
+
+          <form onSubmit={handleRegister} style={styles.form}>
+
+            <Reveal delay={60}>
+              <input
+                style={styles.input}
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </Reveal>
+
+            <Reveal delay={130}>
+              <input
+                style={styles.input}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Reveal>
+
+            <Reveal delay={200}>
+              <input
+                style={styles.input}
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Reveal>
+
+            <Reveal delay={270}>
+              <input
+                style={styles.input}
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </Reveal>
+
+            <Reveal delay={340}>
+              <button style={styles.button} className="button-anim">
+                Register
+              </button>
+            </Reveal>
+
+          </form>
+
+          <Reveal delay={400}>
+            <p style={styles.linkText}>
+              Already have an account?{" "}
+              <Link to="/login" style={styles.link}>
+                Login
+              </Link>
+            </p>
+          </Reveal>
+
+        </div>
+      </Reveal>
     </div>
   );
 }
 
-/* ---------------- Luxury Styling System ---------------- */
+/* --------------------------- STYLES --------------------------- */
 
 const styles = {
   page: {
     width: "100%",
-    height: "100%",
+    minHeight: "100vh",
     backgroundColor: "#0A0A0A",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    overflow: "hidden",
-    padding: "20px",
+    padding: "40px 20px",
   },
+
   card: {
-    width: "100%",
-    maxWidth: "420px",
-    padding: "38px 34px",
-    borderRadius: "14px",
-    backgroundColor: "#141414",
-    border: "1px solid rgba(212,175,55,0.3)",
-    boxShadow: "0 0 20px rgba(0,0,0,0.7)",
+    width: "380px",
+    backgroundColor: "#111",
+    borderRadius: "12px",
+    padding: "32px",
+    boxShadow: "0 0 18px rgba(212,175,55,0.15)",
     textAlign: "center",
   },
-  logo: {
-    color: "#D4AF37",
-    fontSize: "34px",
+
+  title: {
+    fontSize: "32px",
     fontWeight: "800",
-    letterSpacing: "2px",
-    marginBottom: "5px",
+    color: "white",
+    marginBottom: "20px",
   },
-  subtitle: {
-    color: "#BBBBBB",
-    fontSize: "14px",
-    marginBottom: "26px",
-  },
+
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "18px",
+    gap: "16px",
+    marginBottom: "20px",
   },
-  field: {
-    textAlign: "left",
-  },
-  label: {
-    color: "#D4AF37",
-    marginBottom: "6px",
-  },
+
   input: {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#1F1F1F",
-    border: "1px solid #333",
-    borderRadius: "6px",
-    color: "#FFF",
-    fontSize: "15px",
-  },
-  button: {
-    width: "100%",
-    padding: "12px",
-    marginTop: "6px",
-    backgroundColor: "#D4AF37",
-    borderRadius: "6px",
-    color: "#0A0A0A",
-    border: "none",
-    cursor: "pointer",
+    padding: "14px",
     fontSize: "16px",
-    fontWeight: "600",
+    borderRadius: "8px",
+    border: "1px solid #444",
+    backgroundColor: "#222",
+    color: "white",
   },
-  error: {
-    color: "#FF5C5C",
+
+  button: {
+    backgroundColor: "#D4AF37",
+    padding: "14px",
+    borderRadius: "8px",
+    fontWeight: "700",
+    fontSize: "18px",
+    color: "#000",
+    cursor: "pointer",
+    border: "none",
+  },
+
+  linkText: {
+    marginTop: "10px",
+    color: "#CCCCCC",
     fontSize: "14px",
-    textAlign: "center",
   },
-  success: {
-    color: "#88FF88",
-    fontSize: "14px",
-    textAlign: "center",
-  },
-  bottomText: {
-    marginTop: "18px",
-    color: "#AAAAAA",
-  },
+
   link: {
     color: "#D4AF37",
-    marginLeft: "4px",
+    fontWeight: "600",
     textDecoration: "none",
   },
 };

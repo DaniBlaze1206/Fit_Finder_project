@@ -54,7 +54,17 @@ router.post(
      
       const role = 'user';
 
-      const newUser = new User(newId, username, email, hashedPassword, role, new Date().toISOString());
+      const newUser = new User(
+			newId,
+			username,
+			email,
+			hashedPassword,
+			role,
+			new Date().toISOString(),
+			"",   // bio
+			""    // profilePicUrl
+	  );
+
       users.push(newUser);
       await writeUsers(users);
 

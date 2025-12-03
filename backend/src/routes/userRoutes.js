@@ -10,7 +10,7 @@ const { getProfile, getAllUsers, updateUser, updatePassword } = require('../cont
 
 router.get('/', verifyToken, authorizeRoles('admin'), getAllUsers);
 
-router.get('/me', verifyToken, getProfile);
+router.get("/me", verifyToken, getProfile);
 
 router.patch('/me', verifyToken, updateUser);
 

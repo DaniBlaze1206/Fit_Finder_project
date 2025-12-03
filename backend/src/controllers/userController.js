@@ -20,18 +20,18 @@ const writeUsers = async (users) => {
 };
 
 
-// get profile
-const getProfile = async (req, res) => {
-	try {
-		const users = await readUser();
-		const user = users.find(u => u.id === req.user.id);
-		if (!user) return res.status(404).json({ error: 'User not found' });
 
-		const { password, ...safeUser } = user; // remove password
-		res.status(200).json(safeUser);
-	} catch (error) {
-		res.status(500).json({ error: 'Error while getting profile' });
-	}
+const getProfile = async (req, res) => {
+  try {
+    const users = await readUser();
+    const user = users.find((u) => Number(u.id) === Number(req.user.id));
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { password, ...safeUser } = user;
+    res.status(200).json(safeUser);
+  } catch (error) {
+    res.status(500).json({ error: "Error while getting profile" });
+  }
 };
 
 // get all users
@@ -47,36 +47,31 @@ const getAllUsers = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const users = await readUser();
-    const userIndex = users.findIndex(u => u.id === req.user.id);
-    if (userIndex === -1) return res.status(404).json({ error: 'User not found' });
+    const userIndex = users.findIndex((u) => Number(u.id) === Number(req.user.id));
+    if (userIndex === -1) return res.status(404).json({ error: "User not found" });
 
     const existingUser = users[userIndex];
 
-
+    // ✅ allow ONLY these fields
     const allowedUpdates = {
       username: req.body.username ?? existingUser.username,
-      email: req.body.email ?? existingUser.email
+      bio: req.body.bio ?? existingUser.bio ?? "",
+      profilePicUrl: req.body.profilePicUrl ?? existingUser.profilePicUrl ?? "",
     };
 
-
-    if (allowedUpdates.email && !allowedUpdates.email.includes('@')) {
-      return res.status(400).json({ error: 'Invalid email format' });
+    // (optional) basic validation
+    if (allowedUpdates.username && String(allowedUpdates.username).trim().length < 2) {
+      return res.status(400).json({ error: "Username is too short" });
     }
 
-    const updatedUser = {
-      ...existingUser,
-      ...allowedUpdates
-    };
-
-    users[userIndex] = updatedUser;
+    users[userIndex] = { ...existingUser, ...allowedUpdates };
     await writeUsers(users);
 
-    const { password, ...safeUser } = updatedUser;
-
+    const { password, ...safeUser } = users[userIndex];
     res.status(200).json(safeUser);
-
   } catch (err) {
-    res.status(500).json({ error: 'Error updating profile' });
+    console.error(err);
+    res.status(500).json({ error: "Error updating profile" });
   }
 };
 

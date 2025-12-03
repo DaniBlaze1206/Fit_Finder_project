@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import athleteHero from "../assets/ChatGPT Image Nov 27, 2025, 03_53_48 AM.png";
+import ProfileAvatarButton from "../components/ProfileAvatarButton.jsx";
 
-/* -------------------- REVEAL ANIMATION (FIXED) -------------------- */
+/* -------------------- REVEAL ANIMATION -------------------- */
 function Reveal({ children }) {
   const ref = useRef(null);
 
@@ -31,11 +32,12 @@ function Reveal({ children }) {
   );
 }
 
-/* -------------------- LANDING PAGE -------------------- */
 export default function LandingPage() {
+  const token = useMemo(() => localStorage.getItem("token"), []);
+  const isLoggedIn = Boolean(token);
+
   return (
     <div style={styles.page}>
-
       {/* NAVBAR */}
       <nav style={styles.navbar}>
         <div style={styles.logo}>FITFINDER</div>
@@ -47,9 +49,16 @@ export default function LandingPage() {
           <a style={styles.navLink} className="nav-tab">For Coaches</a>
         </div>
 
-        <Link to="/register" style={styles.navButton} className="button-anim">
-          Get Started
-        </Link>
+        {/* ONLY navbar changes when logged in */}
+        <div style={styles.navRight}>
+          {isLoggedIn ? (
+            <ProfileAvatarButton size={40} />
+          ) : (
+            <Link to="/register" className="button-anim" style={styles.navButton}>
+              Get Started
+            </Link>
+          )}
+        </div>
       </nav>
 
       {/* HERO SECTION */}
@@ -68,8 +77,9 @@ export default function LandingPage() {
               fitness journey.
             </p>
 
-            <Link to="/register" style={styles.ctaButton} className="button-anim">
-              Join FitFinder
+            {/* ALWAYS show Get Started here (landing page) */}
+            <Link to="/register" className="button-anim" style={styles.ctaButton}>
+              Get Started
             </Link>
           </div>
         </Reveal>
@@ -88,8 +98,7 @@ export default function LandingPage() {
             <div style={styles.featureIcon}>🧭</div>
             <h3 style={styles.featureTitle}>Find Gyms & Coaches</h3>
             <p style={styles.featureText}>
-              Search nearby gyms, compare trainers, explore classes,
-              and book instantly.
+              Search nearby gyms, compare trainers, explore classes, and book instantly.
             </p>
           </div>
         </Reveal>
@@ -99,8 +108,7 @@ export default function LandingPage() {
             <div style={styles.featureIcon}>🎯</div>
             <h3 style={styles.featureTitle}>Grow as a Coach</h3>
             <p style={styles.featureText}>
-              Build your coaching profile, attract new clients,
-              and manage sessions easily.
+              Build your coaching profile, attract new clients, and manage sessions easily.
             </p>
           </div>
         </Reveal>
@@ -110,8 +118,7 @@ export default function LandingPage() {
             <div style={styles.featureIcon}>🏢</div>
             <h3 style={styles.featureTitle}>Manage Your Gym</h3>
             <p style={styles.featureText}>
-              Showcase your gym, manage reservations, and grow your
-              community with modern tools.
+              Showcase your gym, manage reservations, and grow your community with modern tools.
             </p>
           </div>
         </Reveal>
@@ -163,27 +170,21 @@ export default function LandingPage() {
           <Reveal>
             <div className="card" style={styles.whyCard}>
               <h3 style={styles.whyCardTitle}>All-in-One Platform</h3>
-              <p>
-                Users, coaches, gyms—everything you need in one place.
-              </p>
+              <p>Users, coaches, gyms—everything you need in one place.</p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.whyCard}>
               <h3 style={styles.whyCardTitle}>Verified Community</h3>
-              <p>
-                Authentic profiles, trusted reviews, and real professionals.
-              </p>
+              <p>Authentic profiles, trusted reviews, and real professionals.</p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.whyCard}>
               <h3 style={styles.whyCardTitle}>Smart Tools</h3>
-              <p>
-                Modern tools designed to elevate your training or business.
-              </p>
+              <p>Modern tools designed to elevate your training or business.</p>
             </div>
           </Reveal>
         </div>
@@ -195,25 +196,37 @@ export default function LandingPage() {
           <h2 style={styles.sectionTitle}>Who Is FitFinder For?</h2>
         </Reveal>
 
-        <div style={styles.audienceGrid}>
+        <div style={styles.audienceGrid} className="audience-grid">
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <h3>Users</h3>
-              <p>Find gyms, book sessions, and start your fitness journey.</p>
+              <div style={styles.audienceCardHeader}>
+                <h3 style={styles.audienceCardTitle}>Users</h3>
+              </div>
+              <p style={styles.audienceCardText}>
+                Find gyms, book training sessions, follow programs, and grow your fitness journey.
+              </p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <h3>Coaches</h3>
-              <p>Grow your business and manage your clients seamlessly.</p>
+              <div style={styles.audienceCardHeader}>
+                <h3 style={styles.audienceCardTitle}>Coaches</h3>
+              </div>
+              <p style={styles.audienceCardText}>
+                Build your coaching business, manage clients, and increase your visibility.
+              </p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <h3>Gyms</h3>
-              <p>Increase visibility, manage bookings, and attract new members.</p>
+              <div style={styles.audienceCardHeader}>
+                <h3 style={styles.audienceCardTitle}>Gyms</h3>
+              </div>
+              <p style={styles.audienceCardText}>
+                Showcase your facility, accept reservations, and grow your community with ease.
+              </p>
             </div>
           </Reveal>
         </div>
@@ -253,9 +266,7 @@ export default function LandingPage() {
         </Reveal>
       </footer>
 
-      {/* FIXED STYLES */}
       <style>{`
-        /* REVEAL (GPU OPTIMIZED) */
         .reveal {
           opacity: 0;
           transform: translate3d(0, 20px, 0);
@@ -267,7 +278,6 @@ export default function LandingPage() {
           transform: translate3d(0, 0, 0);
         }
 
-        /* NAV HOVER */
         .nav-tab {
           position: relative;
           transition: color 0.25s ease;
@@ -289,12 +299,15 @@ export default function LandingPage() {
           width: 100%;
         }
 
-        /* ⭐ PREMIUM GOLD BUTTON HOVER — FIXED */
         .button-anim {
           position: relative;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           overflow: hidden;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
+          transform: translateZ(0);
+          white-space: nowrap;
         }
         .button-anim:hover {
           transform: translateY(-2px);
@@ -307,12 +320,7 @@ export default function LandingPage() {
           left: -80%;
           width: 50%;
           height: 100%;
-          background: linear-gradient(
-            120deg,
-            transparent,
-            rgba(255,255,255,0.55),
-            transparent
-          );
+          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
           transform: skewX(-20deg);
           pointer-events: none;
         }
@@ -324,7 +332,6 @@ export default function LandingPage() {
           100% { left: 130%; }
         }
 
-        /* CARD HOVER */
         .card {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -332,19 +339,20 @@ export default function LandingPage() {
           transform: translateY(-6px);
           box-shadow: 0 0 25px rgba(212,175,55,0.25);
         }
-      `}</style>
 
+        @media (max-width: 980px) {
+          .audience-grid {
+            grid-template-columns: repeat(1, minmax(0, 360px));
+          }
+        }
+      `}</style>
     </div>
   );
 }
 
 /* -------------------- MAIN STYLES -------------------- */
 const styles = {
-  page: {
-    width: "100%",
-    backgroundColor: "#0A0A0A",
-    color: "white",
-  },
+  page: { width: "100%", backgroundColor: "#0A0A0A", color: "white" },
 
   navbar: {
     width: "100%",
@@ -366,10 +374,7 @@ const styles = {
     letterSpacing: "2px",
   },
 
-  navLinks: {
-    display: "flex",
-    gap: "30px",
-  },
+  navLinks: { display: "flex", gap: "30px" },
 
   navLink: {
     fontSize: "16px",
@@ -377,6 +382,8 @@ const styles = {
     cursor: "pointer",
     textDecoration: "none",
   },
+
+  navRight: { display: "flex", alignItems: "center", gap: "10px" },
 
   navButton: {
     backgroundColor: "#D4AF37",
@@ -387,7 +394,6 @@ const styles = {
     textDecoration: "none",
   },
 
-  /* HERO */
   heroSection: {
     display: "flex",
     padding: "90px 60px 60px",
@@ -396,10 +402,7 @@ const styles = {
     flexWrap: "wrap",
   },
 
-  heroLeft: {
-    maxWidth: "480px",
-    marginBottom: "40px",
-  },
+  heroLeft: { maxWidth: "480px", marginBottom: "40px" },
 
   heroTitle: {
     fontSize: "72px",
@@ -408,11 +411,7 @@ const styles = {
     marginBottom: "18px",
   },
 
-  heroSubtitle: {
-    fontSize: "18px",
-    color: "#CCCCCC",
-    marginBottom: "28px",
-  },
+  heroSubtitle: { fontSize: "18px", color: "#CCCCCC", marginBottom: "28px" },
 
   ctaButton: {
     backgroundColor: "#D4AF37",
@@ -424,9 +423,7 @@ const styles = {
     textDecoration: "none",
   },
 
-  heroRight: {
-    maxWidth: "480px",
-  },
+  heroRight: { maxWidth: "480px" },
 
   heroImage: {
     width: "100%",
@@ -435,7 +432,6 @@ const styles = {
     objectFit: "cover",
   },
 
-  /* FEATURES */
   featuresSection: {
     marginTop: "40px",
     display: "flex",
@@ -456,42 +452,17 @@ const styles = {
     textAlign: "center",
   },
 
-  featureIcon: {
-    fontSize: "40px",
-    marginBottom: "12px",
-    color: "#D4AF37",
-  },
+  featureIcon: { fontSize: "40px", marginBottom: "12px", color: "#D4AF37" },
 
-  featureTitle: {
-    fontSize: "22px",
-    fontWeight: "700",
-    marginBottom: "10px",
-  },
+  featureTitle: { fontSize: "22px", fontWeight: "700", marginBottom: "10px" },
 
-  featureText: {
-    fontSize: "16px",
-    color: "#CCCCCC",
-  },
+  featureText: { fontSize: "16px", color: "#CCCCCC" },
 
-  /* HOW SECTION */
-  howSection: {
-    padding: "70px 20px",
-    backgroundColor: "#0D0D0D",
-    textAlign: "center",
-  },
+  howSection: { padding: "70px 20px", backgroundColor: "#0D0D0D", textAlign: "center" },
 
-  sectionTitle: {
-    fontSize: "34px",
-    fontWeight: "800",
-    marginBottom: "30px",
-  },
+  sectionTitle: { fontSize: "34px", fontWeight: "800", marginBottom: "30px" },
 
-  howGrid: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "25px",
-    flexWrap: "wrap",
-  },
+  howGrid: { display: "flex", justifyContent: "center", gap: "25px", flexWrap: "wrap" },
 
   howCard: {
     width: "300px",
@@ -502,31 +473,13 @@ const styles = {
     boxShadow: "0 0 18px rgba(0,0,0,0.45)",
   },
 
-  howStep: {
-    fontSize: "20px",
-    fontWeight: "700",
-    marginBottom: "10px",
-    color: "#D4AF37",
-  },
+  howStep: { fontSize: "20px", fontWeight: "700", marginBottom: "10px", color: "#D4AF37" },
 
-  howText: {
-    fontSize: "15px",
-    color: "#CCCCCC",
-  },
+  howText: { fontSize: "15px", color: "#CCCCCC" },
 
-  /* WHY */
-  whySection: {
-    padding: "70px 20px",
-    backgroundColor: "#111",
-    textAlign: "center",
-  },
+  whySection: { padding: "70px 20px", backgroundColor: "#111", textAlign: "center" },
 
-  whyGrid: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "25px",
-    flexWrap: "wrap",
-  },
+  whyGrid: { display: "flex", justifyContent: "center", gap: "25px", flexWrap: "wrap" },
 
   whyCard: {
     width: "300px",
@@ -537,41 +490,50 @@ const styles = {
     boxShadow: "0 0 18px rgba(0,0,0,0.45)",
   },
 
-  whyCardTitle: {
-    fontSize: "20px",
-    fontWeight: "700",
-    marginBottom: "10px",
-    color: "#D4AF37",
-  },
+  whyCardTitle: { fontSize: "20px", fontWeight: "700", marginBottom: "10px", color: "#D4AF37" },
 
-  /* AUDIENCE */
-  audienceSection: {
-    padding: "70px 20px",
-    textAlign: "center",
-  },
+  audienceSection: { padding: "70px 20px", textAlign: "center" },
 
   audienceGrid: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "repeat(3, minmax(0, 300px))",
     justifyContent: "center",
     gap: "25px",
-    flexWrap: "wrap",
+    alignItems: "stretch",
   },
 
   audienceCard: {
-    width: "300px",
+    height: "100%",
     padding: "24px",
     background: "linear-gradient(145deg, #111, #090909)",
     borderRadius: "12px",
     border: "1px solid rgba(212,175,55,0.15)",
     boxShadow: "0 0 18px rgba(0,0,0,0.45)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
 
-  /* FOOTER */
-  footer: {
-    backgroundColor: "#000",
-    padding: "60px 40px 20px",
-    marginTop: "40px",
+  audienceCardHeader: {
+    minHeight: "34px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
+
+  audienceCardTitle: { margin: 0, fontSize: "20px", fontWeight: 800, color: "#FFFFFF" },
+
+  audienceCardText: {
+    margin: 0,
+    color: "#CCCCCC",
+    lineHeight: 1.6,
+    flex: 1,
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+
+  footer: { backgroundColor: "#000", padding: "60px 40px 20px", marginTop: "40px" },
 
   footerTop: {
     display: "flex",
@@ -581,36 +543,15 @@ const styles = {
     marginBottom: "30px",
   },
 
-  footerColumn: {
-    maxWidth: "250px",
-  },
+  footerColumn: { maxWidth: "250px" },
 
-  footerTitle: {
-    fontSize: "24px",
-    fontWeight: "800",
-    color: "#D4AF37",
-    marginBottom: "12px",
-  },
+  footerTitle: { fontSize: "24px", fontWeight: "800", color: "#D4AF37", marginBottom: "12px" },
 
-  footerSubTitle: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#D4AF37",
-    marginBottom: "10px",
-  },
+  footerSubTitle: { fontSize: "18px", fontWeight: "700", color: "#D4AF37", marginBottom: "10px" },
 
-  footerText: {
-    color: "#CCCCCC",
-    fontSize: "14px",
-    marginBottom: "10px",
-  },
+  footerText: { color: "#CCCCCC", fontSize: "14px", marginBottom: "10px" },
 
-  footerLink: {
-    color: "#CCCCCC",
-    fontSize: "14px",
-    display: "block",
-    marginBottom: "8px",
-  },
+  footerLink: { color: "#CCCCCC", fontSize: "14px", display: "block", marginBottom: "8px" },
 
   footerBottom: {
     borderTop: "1px solid rgba(212,175,55,0.25)",

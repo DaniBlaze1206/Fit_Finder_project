@@ -40,13 +40,26 @@ export default function LandingPage() {
     <div style={styles.page}>
       {/* NAVBAR */}
       <nav style={styles.navbar}>
-        <div style={styles.logo}>FITFINDER</div>
+        <Link to="/" style={styles.logo}>
+          FITFINDER
+        </Link>
 
         <div style={styles.navLinks}>
-          <a style={styles.navLink} className="nav-tab">Home</a>
-          <a style={styles.navLink} className="nav-tab">How It Works</a>
-          <a style={styles.navLink} className="nav-tab">For Gyms</a>
-          <a style={styles.navLink} className="nav-tab">For Coaches</a>
+          <Link to="/gyms" style={styles.navLink} className="nav-tab">
+            Users
+          </Link>
+
+          <Link to="/manager/gyms" style={styles.navLink} className="nav-tab">
+            For Gym Managers
+          </Link>
+
+          <Link to="/dashboard/coach" style={styles.navLink} className="nav-tab">
+            For Coaches
+          </Link>
+
+          <Link to="/about" style={styles.navLink} className="nav-tab">
+            About Us
+          </Link>
         </div>
 
         {/* ONLY navbar changes when logged in */}
@@ -372,6 +385,7 @@ const styles = {
     fontWeight: "900",
     color: "#D4AF37",
     letterSpacing: "2px",
+    textDecoration: "none",
   },
 
   navLinks: { display: "flex", gap: "30px" },

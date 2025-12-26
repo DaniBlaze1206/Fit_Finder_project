@@ -45,7 +45,10 @@ export default function LoginPage() {
 
   async function handleLogin(e) {
     e.preventDefault();
-    if (!email || !password) return alert("Please enter email and password.");
+    if (!email || !password) {
+      alert("Please enter email and password.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -54,8 +57,10 @@ export default function LoginPage() {
         password,
       });
 
+      // ✅ Persist auth state
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("role", response.data.user?.role || "user");
 
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -71,7 +76,6 @@ export default function LoginPage() {
   return (
     <div style={styles.page}>
       <style>{`
-        /* Reveal (GPU; prevents layout/scroll glitches) */
         .reveal {
           opacity: 0;
           transform: translate3d(0, 20px, 0);
@@ -84,7 +88,6 @@ export default function LoginPage() {
           transform: translate3d(0, 0, 0);
         }
 
-        /* Button hover shine (same vibe as Landing) */
         .button-anim {
           position: relative;
           display: inline-block;
@@ -119,14 +122,12 @@ export default function LoginPage() {
           100% { left: 130%; }
         }
 
-        /* Disabled button feel */
         .btn-disabled {
           opacity: 0.7;
           cursor: not-allowed;
           filter: grayscale(0.15);
         }
 
-        /* Input focus */
         .lux-input:focus {
           outline: none;
           border-color: rgba(212,175,55,0.55);

@@ -1,9 +1,13 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
 
 import LoginPage from "./pages/auth/LoginPage.jsx";
 import RegisterPage from "./pages/auth/RegisterPage.jsx";
+
+import CoachDetailsPage from "./pages/coaches/CoachDetailsPage.jsx";
+
 
 import DashboardRouterPage from "./pages/dashboard/DashboardRouterPage.jsx";
 import UserDashboardPage from "./pages/dashboard/UserDashboardPage.jsx";
@@ -15,14 +19,18 @@ import ProfilePage from "./pages/profile/ProfilePage.jsx";
 import EditProfilePage from "./pages/profile/EditProfilePage.jsx";
 import ChangePasswordPage from "./pages/profile/ChangePasswordPage.jsx";
 
-// ✅ Unified Search (canonical)
-import UserSearchPage from "./pages/search/UserSearchPage.jsx";
+// ✅ Unified search page (make sure filename matches EXACTLY on disk)
+import UserSearchPage from "./pages/search/userSearchPage.jsx";
 
-// Gyms (details & actions)
+// ✅ Gate routes
+import GymEntryPage from "./pages/roles/GymEntryPage.jsx";
+import CoachEntryPage from "./pages/roles/CoachEntryPage.jsx";
+
+// Gyms
 import GymDetailsPage from "./pages/gyms/GymDetailsPage.jsx";
 import MakeReservationPage from "./pages/gyms/MakeReservationPage.jsx";
 
-// Manager gym management
+// Manager gyms
 import ManagerGymsPage from "./pages/gyms/ManagerGymsPage.jsx";
 import CreateGymPage from "./pages/gyms/CreateGymPage.jsx";
 import EditGymPage from "./pages/gyms/EditGymPage.jsx";
@@ -47,16 +55,17 @@ function App() {
     <Routes>
       {/* Public */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* ✅ Canonical explore/search */}
+      {/* ✅ Users explore */}
       <Route path="/search" element={<UserSearchPage />} />
 
-      {/* ✅ Backward-compatible redirects (optional but recommended) */}
-      <Route path="/gyms" element={<Navigate to="/search" replace />} />
-      <Route path="/coaches" element={<Navigate to="/search" replace />} />
-
+      {/* ✅ Entry gates (navbar must link here) */}
+      <Route path="/gyms" element={<GymEntryPage />} />
+      <Route path="/coaches" element={<CoachEntryPage />} />
+      <Route path="/coaches/:id" element={<CoachDetailsPage />} />
       {/* Dashboard router */}
       <Route path="/dashboard" element={<DashboardRouterPage />} />
       <Route path="/dashboard/user" element={<UserDashboardPage />} />
@@ -69,7 +78,7 @@ function App() {
       <Route path="/profile/edit" element={<EditProfilePage />} />
       <Route path="/profile/password" element={<ChangePasswordPage />} />
 
-      {/* Gyms (details & actions) */}
+      {/* Gym details / actions */}
       <Route path="/gyms/:id" element={<GymDetailsPage />} />
       <Route path="/gyms/:id/reserve" element={<MakeReservationPage />} />
 

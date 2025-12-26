@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import ProfileAvatarButton from "../../components/ProfileAvatarButton.jsx";
 
@@ -6,28 +6,30 @@ export default function UserSearchPage() {
   const token = useMemo(() => localStorage.getItem("token"), []);
   const isLoggedIn = Boolean(token);
 
-  // ✅ /search uses state-based tab (not URL-based)
-  const [activeTab, setActiveTab] = useState("gyms"); // "gyms" | "coaches"
-
+  const [activeTab, setActiveTab] = useState("gyms"); // gyms | coaches
   const [q, setQ] = useState("");
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState([]); // gyms OR coaches
+  const [items, setItems] = useState([]); // ✅ now used in JSX
   const [error, setError] = useState("");
 
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  // If your backend uses /api, change here once:
   const GYMS_ENDPOINT = `${API_BASE}/gyms`;
   const COACHES_ENDPOINT = `${API_BASE}/coaches`;
 
+  function safeId(raw) {
+    return (
+      raw?.id ??
+      raw?._id ??
+      raw?.gymId ??
+      raw?.coachId ??
+      (crypto?.randomUUID ? crypto.randomUUID() : String(Math.random()))
+    );
+  }
+
   function normalizeGym(raw) {
     return {
-      id:
-        raw?.id ??
-        raw?._id ??
-        raw?.gymId ??
-        (crypto?.randomUUID ? crypto.randomUUID() : String(Math.random())),
+      id: safeId(raw),
       title: raw?.name ?? raw?.gymName ?? "Unnamed Gym",
       subtitle: raw?.city ?? raw?.location ?? "Unknown city",
       rating:
@@ -37,7 +39,6 @@ export default function UserSearchPage() {
           ? raw.avgRating
           : null,
       tags: Array.isArray(raw?.tags) ? raw.tags : [],
-      raw,
     };
   }
 
@@ -47,11 +48,7 @@ export default function UserSearchPage() {
     const fullName = (raw?.name ?? `${first} ${last}`)?.trim() || "Unnamed Coach";
 
     return {
-      id:
-        raw?.id ??
-        raw?._id ??
-        raw?.coachId ??
-        (crypto?.randomUUID ? crypto.randomUUID() : String(Math.random())),
+      id: safeId(raw),
       title: fullName,
       subtitle: raw?.city ?? raw?.location ?? raw?.specialty ?? "Coach",
       rating:
@@ -67,7 +64,6 @@ export default function UserSearchPage() {
         : raw?.specialties && Array.isArray(raw.specialties)
         ? raw.specialties
         : [],
-      raw,
     };
   }
 
@@ -76,13 +72,13 @@ export default function UserSearchPage() {
     const cityLower = city.trim().toLowerCase();
 
     return list.filter((x) => {
-      const titleOk = qLower ? x.title.toLowerCase().includes(qLower) : true;
-      const cityOk = cityLower ? (x.subtitle || "").toLowerCase().includes(cityLower) : true;
-      return titleOk && cityOk;
+      const okName = qLower ? x.title.toLowerCase().includes(qLower) : true;
+      const okCity = cityLower ? (x.subtitle || "").toLowerCase().includes(cityLower) : true;
+      return okName && okCity;
     });
   }
 
-  async function fetchActiveTabData() {
+  async function fetchData() {
     setLoading(true);
     setError("");
 
@@ -94,7 +90,7 @@ export default function UserSearchPage() {
       });
 
       if (!res.ok) {
-        throw new Error(`Failed to load ${activeTab} (${res.status})`);
+        throw new Error(`Request failed (${res.status})`);
       }
 
       const data = await res.json();
@@ -105,9 +101,8 @@ export default function UserSearchPage() {
 
       setItems(applyFilter(normalized));
     } catch (err) {
-      console.error("Fetch failed:", err);
+      console.error("Search fetch failed:", err);
 
-      // Fallback data so UI always works
       const fallbackGyms = [
         { id: 1, name: "Gold Flex Gym", city: "Tehran", rating: 4.7, tags: ["Weights", "Cardio"] },
         { id: 2, name: "Iron Core Studio", city: "Shiraz", rating: 4.4, tags: ["CrossFit", "HIIT"] },
@@ -133,59 +128,67 @@ export default function UserSearchPage() {
     }
   }
 
-  // ✅ Re-fetch when tab changes
   useEffect(() => {
-    fetchActiveTabData();
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
-  function onSubmit(e) {
-    e.preventDefault();
-    fetchActiveTabData();
-  }
-
-  function goTab(tab) {
-    // ✅ Stay on /search, just switch dataset
-    setActiveTab(tab);
-  }
-
-  const heading = activeTab === "gyms" ? "Explore Gyms" : "Explore Coaches";
-  const placeholder = activeTab === "gyms" ? "Gym name..." : "Coach name...";
-
-  // If you DON'T have /coaches/:id route yet, set this to false for now.
-  const HAS_COACH_DETAILS = false;
-
   return (
     <div style={styles.page}>
-      {/* NAVBAR */}
+      {/* NAVBAR: same tags as LandingPage, active underline shows page */}
       <nav style={styles.navbar}>
-        <Link to="/" style={styles.logo}>
-          FITFINDER
-        </Link>
+		<Link to="/" style={styles.logo}>
+			FITFINDER
+		</Link>
 
-        <div style={styles.navLinks}>
-          <Link to="/search" style={styles.navLink} className="nav-tab">
-            Explore
-          </Link>
-          <Link to="/about" style={styles.navLink} className="nav-tab">
-            About
-          </Link>
-        </div>
+		<div style={styles.navLinks}>
+			<NavLink
+			to="/search"
+			className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+			style={styles.navLink}
+			>
+			Explore
+			</NavLink>
 
-        <div style={styles.navRight}>
-          {isLoggedIn ? (
-            <ProfileAvatarButton size={40} />
-          ) : (
-            <Link to="/register" className="button-anim" style={styles.navButton}>
-              Get Started
-            </Link>
-          )}
-        </div>
-      </nav>
+			<NavLink
+			to="/gyms"
+			className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+			style={styles.navLink}
+			>
+			Gyms
+			</NavLink>
+
+			<NavLink
+			to="/coaches"
+			className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+			style={styles.navLink}
+			>
+			Coaches
+			</NavLink>
+
+			<NavLink
+			to="/about"
+			className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+			style={styles.navLink}
+			>
+			About Us
+			</NavLink>
+		</div>
+
+		<div style={styles.navRight}>
+			{isLoggedIn ? (
+			<ProfileAvatarButton size={40} />
+			) : (
+			<Link to="/register" className="button-anim" style={styles.navButton}>
+				Get Started
+			</Link>
+			)}
+		</div>
+		</nav>
 
       {/* HEADER */}
       <section style={styles.header}>
-        <h1 style={styles.title}>{heading}</h1>
+        <h1 style={styles.title}>{activeTab === "gyms" ? "Explore Gyms" : "Explore Coaches"}</h1>
         <p style={styles.subtitle}>
           Search by name and optionally filter by city. Switch tabs to browse both gyms and coaches.
         </p>
@@ -194,45 +197,55 @@ export default function UserSearchPage() {
         <div style={styles.tabsWrap}>
           <button
             type="button"
-            onClick={() => goTab("gyms")}
+            onClick={() => setActiveTab("gyms")}
             className="tab-btn"
             style={{
               ...styles.tabBtn,
               ...(activeTab === "gyms" ? styles.tabBtnActive : {}),
             }}
+            disabled={loading}
           >
             Gyms
           </button>
 
           <button
             type="button"
-            onClick={() => goTab("coaches")}
+            onClick={() => setActiveTab("coaches")}
             className="tab-btn"
             style={{
               ...styles.tabBtn,
               ...(activeTab === "coaches" ? styles.tabBtnActive : {}),
             }}
+            disabled={loading}
           >
             Coaches
           </button>
         </div>
 
-        {/* SEARCH FORM (NO hover on container) */}
-        <form onSubmit={onSubmit} style={styles.searchCard}>
+        {/* SEARCH */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            fetchData();
+          }}
+          style={styles.searchCard}
+        >
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={placeholder}
+            placeholder={activeTab === "gyms" ? "Gym name..." : "Coach name..."}
             style={styles.input}
+            disabled={loading}
           />
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City..."
             style={styles.input}
+            disabled={loading}
           />
 
-          <button type="submit" className="button-anim" style={styles.searchButton}>
+          <button type="submit" className="button-anim" style={styles.searchButton} disabled={loading}>
             {loading ? "Searching..." : "Search"}
           </button>
 
@@ -243,7 +256,7 @@ export default function UserSearchPage() {
             onClick={() => {
               setQ("");
               setCity("");
-              fetchActiveTabData();
+              fetchData();
             }}
             disabled={loading}
           >
@@ -251,22 +264,18 @@ export default function UserSearchPage() {
           </button>
         </form>
 
+        {loading ? <div style={styles.loadingText}>Loading results…</div> : null}
         {error ? <div style={styles.errorBox}>{error}</div> : null}
       </section>
 
-      {/* RESULTS */}
+      {/* RESULTS (✅ items used here) */}
       <section style={styles.resultsSection}>
-        <div style={styles.grid}>
-          {items.map((x) => {
-            const to =
-              activeTab === "gyms"
-                ? `/gyms/${x.id}`
-                : HAS_COACH_DETAILS
-                ? `/coaches/${x.id}`
-                : "/dashboard/coach";
-
-            return (
-              <Link key={x.id} to={to} className="card" style={styles.card}>
+        {!loading && items.length === 0 ? (
+          <div style={styles.empty}>No results found. Try another search.</div>
+        ) : (
+          <div style={styles.grid}>
+            {items.map((x) => (
+              <div key={x.id} className="card" style={styles.card}>
                 <div style={styles.cardTop}>
                   <div style={styles.cardTitle}>{x.title}</div>
                   <div style={styles.rating}>{x.rating != null ? `⭐ ${x.rating}` : "—"}</div>
@@ -287,14 +296,10 @@ export default function UserSearchPage() {
                 </div>
 
                 <div style={styles.cardHint}>View details →</div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {!loading && items.length === 0 ? (
-          <div style={styles.empty}>No results found. Try another search.</div>
-        ) : null}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <style>{sharedCss}</style>
@@ -306,6 +311,7 @@ const sharedCss = `
   .nav-tab {
     position: relative;
     transition: color 0.25s ease;
+    text-decoration: none;
   }
   .nav-tab:hover { color: #D4AF37; }
   .nav-tab::after {
@@ -318,8 +324,16 @@ const sharedCss = `
     background-color: #D4AF37;
     transition: width 0.25s ease;
   }
-  .nav-tab:hover::after { width: 100%; }
-
+  .nav-tab:hover::after,
+  .nav-tab.active::after {
+    width: 100%;
+  }
+  .nav-tab.active {
+  		color: #D4AF37;
+   }
+	.nav-tab.active::after {
+	width: 100%;
+	}
   .button-anim {
     position: relative;
     display: inline-flex;
@@ -352,8 +366,6 @@ const sharedCss = `
 
   .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none;
-    color: inherit;
   }
   .card:hover {
     transform: translateY(-6px);
@@ -382,7 +394,6 @@ const styles = {
     fontWeight: "900",
     color: "#D4AF37",
     letterSpacing: "2px",
-    textDecoration: "none",
   },
 
   navLinks: { display: "flex", gap: "30px" },
@@ -417,12 +428,7 @@ const styles = {
     lineHeight: 1.6,
   },
 
-  tabsWrap: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "10px",
-    marginBottom: "18px",
-  },
+  tabsWrap: { display: "flex", justifyContent: "center", gap: "10px", marginBottom: "18px" },
 
   tabBtn: {
     backgroundColor: "transparent",
@@ -431,6 +437,7 @@ const styles = {
     borderRadius: "10px",
     border: "1px solid rgba(255,255,255,0.16)",
     fontWeight: 900,
+    cursor: "pointer",
   },
 
   tabBtnActive: {
@@ -478,6 +485,13 @@ const styles = {
     fontWeight: "800",
     color: "#D4AF37",
     border: "1px solid rgba(212,175,55,0.45)",
+  },
+
+  loadingText: {
+    marginTop: "12px",
+    color: "#D4AF37",
+    fontWeight: "800",
+    opacity: 0.9,
   },
 
   errorBox: {

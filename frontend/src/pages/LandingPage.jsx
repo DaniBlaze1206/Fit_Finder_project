@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useMemo, useRef } from "react";
 import athleteHero from "../assets/ChatGPT Image Nov 27, 2025, 03_53_48 AM.png";
 import ProfileAvatarButton from "../components/ProfileAvatarButton.jsx";
@@ -45,24 +45,39 @@ export default function LandingPage() {
         </Link>
 
         <div style={styles.navLinks}>
-          <Link to="/gyms" style={styles.navLink} className="nav-tab">
-            Users
-          </Link>
+          <NavLink
+            to="/search"
+            style={styles.navLink}
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            Explore
+          </NavLink>
 
-          <Link to="/manager/gyms" style={styles.navLink} className="nav-tab">
-            For Gym Managers
-          </Link>
+          <NavLink
+            to="/gyms"
+            style={styles.navLink}
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            Gyms
+          </NavLink>
 
-          <Link to="/dashboard/coach" style={styles.navLink} className="nav-tab">
-            For Coaches
-          </Link>
+          <NavLink
+            to="/coaches"
+            style={styles.navLink}
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            Coaches
+          </NavLink>
 
-          <Link to="/about" style={styles.navLink} className="nav-tab">
-            About Us
-          </Link>
+          <NavLink
+            to="/about"
+            style={styles.navLink}
+            className={({ isActive }) => `nav-tab${isActive ? " active" : ""}`}
+          >
+            About
+          </NavLink>
         </div>
 
-        {/* ONLY navbar changes when logged in */}
         <div style={styles.navRight}>
           {isLoggedIn ? (
             <ProfileAvatarButton size={40} />
@@ -74,7 +89,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
+      {/* HERO */}
       <section style={styles.heroSection}>
         <Reveal>
           <div style={styles.heroLeft}>
@@ -86,14 +101,19 @@ export default function LandingPage() {
 
             <p style={styles.heroSubtitle}>
               FitFinder connects users, coaches, and gyms through one powerful
-              platform—book sessions, find trainers, manage gyms, and grow your
-              fitness journey.
+              platform — discover gyms, find trainers, book sessions, and manage
+              everything from one place.
             </p>
 
-            {/* ALWAYS show Get Started here (landing page) */}
-            <Link to="/register" className="button-anim" style={styles.ctaButton}>
-              Get Started
-            </Link>
+            <div style={styles.heroButtons}>
+              <Link to="/register" className="button-anim" style={styles.ctaButton}>
+                Get Started
+              </Link>
+
+              <Link to="/search" className="button-anim" style={styles.secondaryButton}>
+                Explore
+              </Link>
+            </div>
           </div>
         </Reveal>
 
@@ -109,29 +129,29 @@ export default function LandingPage() {
         <Reveal>
           <div className="card" style={styles.featureCard}>
             <div style={styles.featureIcon}>🧭</div>
-            <h3 style={styles.featureTitle}>Find Gyms & Coaches</h3>
+            <h3 style={styles.featureTitle}>Discover</h3>
             <p style={styles.featureText}>
-              Search nearby gyms, compare trainers, explore classes, and book instantly.
+              Find gyms and coaches in your city, compare ratings, and explore what fits your goals.
             </p>
           </div>
         </Reveal>
 
         <Reveal>
           <div className="card" style={styles.featureCard}>
-            <div style={styles.featureIcon}>🎯</div>
-            <h3 style={styles.featureTitle}>Grow as a Coach</h3>
+            <div style={styles.featureIcon}>📅</div>
+            <h3 style={styles.featureTitle}>Book</h3>
             <p style={styles.featureText}>
-              Build your coaching profile, attract new clients, and manage sessions easily.
+              Reserve sessions and plans in a few clicks — no calls, no waiting, no confusion.
             </p>
           </div>
         </Reveal>
 
         <Reveal>
           <div className="card" style={styles.featureCard}>
-            <div style={styles.featureIcon}>🏢</div>
-            <h3 style={styles.featureTitle}>Manage Your Gym</h3>
+            <div style={styles.featureIcon}>🚀</div>
+            <h3 style={styles.featureTitle}>Grow</h3>
             <p style={styles.featureText}>
-              Showcase your gym, manage reservations, and grow your community with modern tools.
+              Coaches and gym managers get tools to manage schedules, customers, and visibility.
             </p>
           </div>
         </Reveal>
@@ -146,58 +166,28 @@ export default function LandingPage() {
         <div style={styles.howGrid}>
           <Reveal>
             <div className="card" style={styles.howCard}>
-              <h3 style={styles.howStep}>1. Sign Up</h3>
+              <h3 style={styles.howStep}>1. Create an account</h3>
               <p style={styles.howText}>
-                Create your account as a user, coach, or gym owner and set up your profile.
+                Everyone starts as a normal user. Later you can upgrade to Coach or Gym Manager.
               </p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.howCard}>
-              <h3 style={styles.howStep}>2. Connect</h3>
+              <h3 style={styles.howStep}>2. Explore options</h3>
               <p style={styles.howText}>
-                Explore gyms, find clients, or manage your fitness facility from one dashboard.
+                Search gyms and coaches, read profiles, and pick what matches your needs.
               </p>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.howCard}>
-              <h3 style={styles.howStep}>3. Grow</h3>
+              <h3 style={styles.howStep}>3. Connect & grow</h3>
               <p style={styles.howText}>
-                Book sessions, train smarter, build your network, and track your success.
+                Book sessions, manage your schedule, and build a stronger fitness journey.
               </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* WHY FITFINDER */}
-      <section style={styles.whySection}>
-        <Reveal>
-          <h2 style={styles.sectionTitle}>Why Choose FitFinder?</h2>
-        </Reveal>
-
-        <div style={styles.whyGrid}>
-          <Reveal>
-            <div className="card" style={styles.whyCard}>
-              <h3 style={styles.whyCardTitle}>All-in-One Platform</h3>
-              <p>Users, coaches, gyms—everything you need in one place.</p>
-            </div>
-          </Reveal>
-
-          <Reveal>
-            <div className="card" style={styles.whyCard}>
-              <h3 style={styles.whyCardTitle}>Verified Community</h3>
-              <p>Authentic profiles, trusted reviews, and real professionals.</p>
-            </div>
-          </Reveal>
-
-          <Reveal>
-            <div className="card" style={styles.whyCard}>
-              <h3 style={styles.whyCardTitle}>Smart Tools</h3>
-              <p>Modern tools designed to elevate your training or business.</p>
             </div>
           </Reveal>
         </div>
@@ -212,37 +202,62 @@ export default function LandingPage() {
         <div style={styles.audienceGrid} className="audience-grid">
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <div style={styles.audienceCardHeader}>
-                <h3 style={styles.audienceCardTitle}>Users</h3>
-              </div>
-              <p style={styles.audienceCardText}>
-                Find gyms, book training sessions, follow programs, and grow your fitness journey.
+              <h3 style={styles.audienceTitle}>Users</h3>
+              <p style={styles.audienceText}>
+                Find gyms, book sessions, explore programs, and track your journey.
               </p>
+              <Link to="/search" className="button-anim" style={styles.smallCta}>
+                Explore
+              </Link>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <div style={styles.audienceCardHeader}>
-                <h3 style={styles.audienceCardTitle}>Coaches</h3>
-              </div>
-              <p style={styles.audienceCardText}>
-                Build your coaching business, manage clients, and increase your visibility.
+              <h3 style={styles.audienceTitle}>Gym Managers</h3>
+              <p style={styles.audienceText}>
+                List your gym, manage reservations, and grow your community.
               </p>
+              <Link to="/gyms" className="button-anim" style={styles.smallCta}>
+                Gyms
+              </Link>
             </div>
           </Reveal>
 
           <Reveal>
             <div className="card" style={styles.audienceCard}>
-              <div style={styles.audienceCardHeader}>
-                <h3 style={styles.audienceCardTitle}>Gyms</h3>
-              </div>
-              <p style={styles.audienceCardText}>
-                Showcase your facility, accept reservations, and grow your community with ease.
+              <h3 style={styles.audienceTitle}>Coaches</h3>
+              <p style={styles.audienceText}>
+                Build your profile, attract clients, and manage sessions easily.
               </p>
+              <Link to="/coaches" className="button-anim" style={styles.smallCta}>
+                Coaches
+              </Link>
             </div>
           </Reveal>
         </div>
+      </section>
+
+      {/* CTA STRIP */}
+      <section style={styles.ctaStrip}>
+        <Reveal>
+          <div className="card" style={styles.ctaStripCard}>
+            <h2 style={styles.ctaStripTitle}>Start your fitness journey today</h2>
+            <p style={styles.ctaStripText}>
+              Whether you’re looking for a gym, training clients, or managing a facility — FitFinder gives you the tools to grow.
+            </p>
+
+            <div style={styles.ctaStripRow}>
+              <Link to="/register" className="button-anim" style={styles.ctaButton}>
+                Create Account
+              </Link>
+
+              <Link to="/search" className="button-anim" style={styles.secondaryButton}>
+                Explore
+              </Link>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       {/* FOOTER */}
@@ -258,16 +273,17 @@ export default function LandingPage() {
 
             <div style={styles.footerColumn}>
               <h4 style={styles.footerSubTitle}>Explore</h4>
-              <a style={styles.footerLink}>Home</a>
-              <a style={styles.footerLink}>For Gyms</a>
-              <a style={styles.footerLink}>For Coaches</a>
+              <Link to="/search" style={styles.footerLink}>Explore</Link>
+              <Link to="/gyms" style={styles.footerLink}>For Gyms</Link>
+              <Link to="/coaches" style={styles.footerLink}>For Coaches</Link>
+              <Link to="/about" style={styles.footerLink}>About</Link>
             </div>
 
             <div style={styles.footerColumn}>
               <h4 style={styles.footerSubTitle}>Support</h4>
-              <a style={styles.footerLink}>Help Center</a>
-              <a style={styles.footerLink}>Terms of Use</a>
-              <a style={styles.footerLink}>Privacy Policy</a>
+              <span style={styles.footerLink}>Help Center</span>
+              <span style={styles.footerLink}>Terms of Use</span>
+              <span style={styles.footerLink}>Privacy Policy</span>
             </div>
           </div>
         </Reveal>
@@ -279,91 +295,86 @@ export default function LandingPage() {
         </Reveal>
       </footer>
 
-      <style>{`
-        .reveal {
-          opacity: 0;
-          transform: translate3d(0, 20px, 0);
-          will-change: opacity, transform;
-          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .reveal-visible {
-          opacity: 1;
-          transform: translate3d(0, 0, 0);
-        }
-
-        .nav-tab {
-          position: relative;
-          transition: color 0.25s ease;
-        }
-        .nav-tab:hover {
-          color: #D4AF37;
-        }
-        .nav-tab::after {
-          content: "";
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 0%;
-          height: 2px;
-          background-color: #D4AF37;
-          transition: width 0.25s ease;
-        }
-        .nav-tab:hover::after {
-          width: 100%;
-        }
-
-        .button-anim {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          transform: translateZ(0);
-          white-space: nowrap;
-        }
-        .button-anim:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 0 12px rgba(212,175,55,0.45);
-        }
-        .button-anim::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -80%;
-          width: 50%;
-          height: 100%;
-          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
-          transform: skewX(-20deg);
-          pointer-events: none;
-        }
-        .button-anim:hover::after {
-          animation: shine-gold 0.6s ease;
-        }
-        @keyframes shine-gold {
-          0% { left: -80%; }
-          100% { left: 130%; }
-        }
-
-        .card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 0 25px rgba(212,175,55,0.25);
-        }
-
-        @media (max-width: 980px) {
-          .audience-grid {
-            grid-template-columns: repeat(1, minmax(0, 360px));
-          }
-        }
-      `}</style>
+      <style>{sharedCss}</style>
     </div>
   );
 }
 
-/* -------------------- MAIN STYLES -------------------- */
+const sharedCss = `
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    will-change: opacity, transform;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .nav-tab {
+    position: relative;
+    transition: color 0.25s ease;
+    text-decoration: none;
+  }
+  .nav-tab:hover { color: #D4AF37; }
+  .nav-tab::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: #D4AF37;
+    transition: width 0.25s ease;
+  }
+  .nav-tab:hover::after { width: 100%; }
+  .nav-tab.active { color: #D4AF37; }
+  .nav-tab.active::after { width: 100%; }
+
+  .button-anim {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: translateZ(0);
+    white-space: nowrap;
+  }
+  .button-anim:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(212,175,55,0.45);
+  }
+  .button-anim::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-20deg);
+    pointer-events: none;
+  }
+  .button-anim:hover::after { animation: shine-gold 0.6s ease; }
+  @keyframes shine-gold { 0% { left: -80%; } 100% { left: 130%; } }
+
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 25px rgba(212,175,55,0.25);
+  }
+
+  @media (max-width: 980px) {
+    .audience-grid {
+      grid-template-columns: repeat(1, minmax(0, 360px));
+    }
+  }
+`;
+
 const styles = {
   page: { width: "100%", backgroundColor: "#0A0A0A", color: "white" },
 
@@ -388,22 +399,15 @@ const styles = {
     textDecoration: "none",
   },
 
-  navLinks: { display: "flex", gap: "30px" },
-
-  navLink: {
-    fontSize: "16px",
-    color: "white",
-    cursor: "pointer",
-    textDecoration: "none",
-  },
-
+  navLinks: { display: "flex", gap: "30px", flexWrap: "wrap" },
+  navLink: { fontSize: "16px", color: "white", textDecoration: "none" },
   navRight: { display: "flex", alignItems: "center", gap: "10px" },
 
   navButton: {
     backgroundColor: "#D4AF37",
     padding: "10px 22px",
     borderRadius: "6px",
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#000",
     textDecoration: "none",
   },
@@ -414,9 +418,10 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     flexWrap: "wrap",
+    gap: "40px",
   },
 
-  heroLeft: { maxWidth: "480px", marginBottom: "40px" },
+  heroLeft: { maxWidth: "520px" },
 
   heroTitle: {
     fontSize: "72px",
@@ -425,29 +430,42 @@ const styles = {
     marginBottom: "18px",
   },
 
-  heroSubtitle: { fontSize: "18px", color: "#CCCCCC", marginBottom: "28px" },
+  heroSubtitle: { fontSize: "18px", color: "#CCCCCC", marginBottom: "26px", lineHeight: 1.7 },
+
+  heroButtons: { display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" },
 
   ctaButton: {
     backgroundColor: "#D4AF37",
     padding: "14px 26px",
-    borderRadius: "6px",
-    fontWeight: "700",
-    fontSize: "18px",
+    borderRadius: "8px",
+    fontWeight: "900",
+    fontSize: "16px",
     color: "#000",
     textDecoration: "none",
   },
 
-  heroRight: { maxWidth: "480px" },
+  secondaryButton: {
+    backgroundColor: "transparent",
+    padding: "14px 26px",
+    borderRadius: "8px",
+    fontWeight: "900",
+    fontSize: "16px",
+    color: "#D4AF37",
+    textDecoration: "none",
+    border: "1px solid rgba(212,175,55,0.45)",
+  },
+
+  heroRight: { maxWidth: "520px", width: "100%" },
 
   heroImage: {
     width: "100%",
-    borderRadius: "10px",
-    filter: "brightness(0.85)",
+    borderRadius: "12px",
+    filter: "brightness(0.9)",
     objectFit: "cover",
   },
 
   featuresSection: {
-    marginTop: "40px",
+    marginTop: "10px",
     display: "flex",
     justifyContent: "center",
     padding: "40px 20px",
@@ -467,14 +485,11 @@ const styles = {
   },
 
   featureIcon: { fontSize: "40px", marginBottom: "12px", color: "#D4AF37" },
-
-  featureTitle: { fontSize: "22px", fontWeight: "700", marginBottom: "10px" },
-
-  featureText: { fontSize: "16px", color: "#CCCCCC" },
+  featureTitle: { fontSize: "22px", fontWeight: "800", marginBottom: "10px" },
+  featureText: { fontSize: "15px", color: "#CCCCCC", lineHeight: 1.7 },
 
   howSection: { padding: "70px 20px", backgroundColor: "#0D0D0D", textAlign: "center" },
-
-  sectionTitle: { fontSize: "34px", fontWeight: "800", marginBottom: "30px" },
+  sectionTitle: { fontSize: "34px", fontWeight: "900", marginBottom: "30px" },
 
   howGrid: { display: "flex", justifyContent: "center", gap: "25px", flexWrap: "wrap" },
 
@@ -485,26 +500,11 @@ const styles = {
     borderRadius: "12px",
     border: "1px solid rgba(212,175,55,0.15)",
     boxShadow: "0 0 18px rgba(0,0,0,0.45)",
+    textAlign: "left",
   },
 
-  howStep: { fontSize: "20px", fontWeight: "700", marginBottom: "10px", color: "#D4AF37" },
-
-  howText: { fontSize: "15px", color: "#CCCCCC" },
-
-  whySection: { padding: "70px 20px", backgroundColor: "#111", textAlign: "center" },
-
-  whyGrid: { display: "flex", justifyContent: "center", gap: "25px", flexWrap: "wrap" },
-
-  whyCard: {
-    width: "300px",
-    padding: "26px",
-    background: "linear-gradient(145deg, #0F0F0F, #090909)",
-    borderRadius: "12px",
-    border: "1px solid rgba(212,175,55,0.18)",
-    boxShadow: "0 0 18px rgba(0,0,0,0.45)",
-  },
-
-  whyCardTitle: { fontSize: "20px", fontWeight: "700", marginBottom: "10px", color: "#D4AF37" },
+  howStep: { fontSize: "18px", fontWeight: "900", marginBottom: "8px", color: "#D4AF37" },
+  howText: { fontSize: "14px", color: "#CCCCCC", lineHeight: 1.7 },
 
   audienceSection: { padding: "70px 20px", textAlign: "center" },
 
@@ -526,28 +526,48 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "10px",
+    textAlign: "left",
   },
 
-  audienceCardHeader: {
-    minHeight: "34px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  audienceTitle: { margin: 0, fontSize: "20px", fontWeight: 900, color: "#FFFFFF" },
 
-  audienceCardTitle: { margin: 0, fontSize: "20px", fontWeight: 800, color: "#FFFFFF" },
-
-  audienceCardText: {
+  audienceText: {
     margin: 0,
     color: "#CCCCCC",
-    lineHeight: 1.6,
+    lineHeight: 1.7,
     flex: 1,
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
   },
 
-  footer: { backgroundColor: "#000", padding: "60px 40px 20px", marginTop: "40px" },
+  smallCta: {
+    marginTop: "10px",
+    backgroundColor: "transparent",
+    padding: "12px 14px",
+    borderRadius: "10px",
+    fontWeight: "900",
+    color: "#D4AF37",
+    textDecoration: "none",
+    border: "1px solid rgba(212,175,55,0.45)",
+    width: "fit-content",
+  },
+
+  ctaStrip: { padding: "60px 20px", textAlign: "center" },
+
+  ctaStripCard: {
+    maxWidth: "980px",
+    margin: "0 auto",
+    padding: "30px",
+    background: "linear-gradient(145deg, #111, #090909)",
+    borderRadius: "14px",
+    border: "1px solid rgba(212,175,55,0.18)",
+    boxShadow: "0 0 18px rgba(0,0,0,0.45)",
+  },
+
+  ctaStripTitle: { fontSize: "30px", fontWeight: "900", marginBottom: "10px" },
+  ctaStripText: { color: "#CCCCCC", lineHeight: 1.7, maxWidth: "800px", margin: "0 auto 18px" },
+
+  ctaStripRow: { display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" },
+
+  footer: { backgroundColor: "#000", padding: "60px 40px 20px", marginTop: "30px" },
 
   footerTop: {
     display: "flex",
@@ -565,7 +585,7 @@ const styles = {
 
   footerText: { color: "#CCCCCC", fontSize: "14px", marginBottom: "10px" },
 
-  footerLink: { color: "#CCCCCC", fontSize: "14px", display: "block", marginBottom: "8px" },
+  footerLink: { color: "#CCCCCC", fontSize: "14px", display: "block", marginBottom: "8px", textDecoration: "none" },
 
   footerBottom: {
     borderTop: "1px solid rgba(212,175,55,0.25)",
